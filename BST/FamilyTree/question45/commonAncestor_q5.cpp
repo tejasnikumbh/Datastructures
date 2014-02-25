@@ -1,0 +1,79 @@
+/*
+ * File : commonAncestor_q5.cpp
+ * ------------------------------------------------------------------------------------
+ * Solution to common ancestor program of question 5. Also serves as a test for family
+ * tree data structure interface and implementation that we defined.
+ */
+
+/* Including standard libraries */
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "familyTree.h"
+using namespace std;
+
+/* Function prototype */
+FamilyTreeNode* commonAncestor(FamilyTreeNode* p1,FamilyTreeNode* p2);
+
+/* Main program */
+int main(){
+
+  /* Introduction */
+  cout<<"Program to detemine common ancestor in a tree"<<endl;
+
+  /* Constructing the tree */
+  FamilyTreeNode* william   = new FamilyTreeNode("William");
+  FamilyTreeNode* elie   = new FamilyTreeNode("Elie");
+  FamilyTreeNode* andy   = new FamilyTreeNode("Andy");
+  FamilyTreeNode* sangram   = new FamilyTreeNode("Sangram");
+  FamilyTreeNode* hazel   = new FamilyTreeNode("Hazel");
+  FamilyTreeNode* shilpa   = new FamilyTreeNode("Shilpa");
+  FamilyTreeNode* apoorva   = new FamilyTreeNode("Apoorva");
+  william->addChild(elie);
+  william->addChild(andy);
+  william->addChild(sangram);
+  elie->addChild(hazel);
+  elie->addChild(shilpa);
+  andy->addChild(apoorva);
+
+  /* Finding common ancestor of some pairs in the tree */
+  
+  FamilyTreeNode* commonAncestor1  = commonAncestor(hazel,apoorva);   
+  cout<<"Common ancestor of "<<hazel->getName()<<" and "<<apoorva->getName()<<" is ";
+  cout<<commonAncestor1->getName()<<endl;
+ 
+  FamilyTreeNode* commonAncestor2  = commonAncestor(hazel,shilpa);
+  cout<<"Common ancestor of "<<hazel->getName()<<" and "<<shilpa->getName()<<" is ";
+  cout<<commonAncestor2->getName()<<endl;
+  
+  return 0;
+}
+
+/* 
+ * Function : commonAncestor
+ * ------------------------------------------------------------------------------
+ * Function returns the common ancestors between two nodes.
+ * Assumes that parameters passed are valid pointers to nodes in the tree.
+ * If there is a line of descent from p1 to p2 or p2 to p1, returns the pointer
+ * to the elder amongst the two.
+ * If p1==p2, returns NULL.
+ */
+
+  FamilyTreeNode* commonAncestor(FamilyTreeNode* p1,FamilyTreeNode* p2){
+    if(p1==p2)
+      return NULL;
+    vector<FamilyTreeNode *> parentChainp1;
+    FamilyTreeNode* curParentp1 = p1;
+    while(curParentp1!=NULL){
+      parentChainp1.push_back(curParentp1); 
+      curParentp1 = curParentp1->getParent();
+    }
+    FamilyTreeNode* curParentp2 = p2;
+    while(curParentp2!=NULL){
+      for(int i=0;i<parentChainp1.size();i++)
+        if(curParentp2==parentChainp1[i]) 
+          return curParentp2;
+      curParentp2 = curParentp2->getParent();
+    }
+  }
+

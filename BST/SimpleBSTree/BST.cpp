@@ -1,0 +1,270 @@
+/*
+ * File : BST.cpp
+ * ------------------------------------------------------------------------------
+ * Some procedures written for BST's. Solutions to q6,q7 and q8 of exercises.
+ * Procedures wr‪itten here are for the unbalanced binary search tree abstraction.
+ */
+
+/* Including standard libraries */
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <cmath>
+#include <iomanip>
+#include <cstdlib>
+#include <vector>
+using namespace std;
+
+/* Necessary structs */
+struct BSTNode{
+  int key;
+  BSTNode* left;
+  BSTNode* right;
+};
+
+/* Function prototypes */
+BSTNode *findNode(BSTNode* &tree,const int &key);
+void insertNode(BSTNode* &tree, const int &key);
+bool removeNode(BSTNode* &tree,const int &key);
+void displayTree(BSTNode* tree);
+int height(BSTNode *tree);
+bool isBalanced(BSTNode *tree);
+bool isBST(BSTNode *tree);
+void traverseAndStoreKeys(BSTNode* tree,vector<int> &keys,const int &key);
+
+/* Main program */
+int main(){
+  cout<<"Program to test certain procedures on BST's"<<endl;
+  /* Constructing the tree */
+  BSTNode* root;
+  for(int i=0;i<20;i++){
+    insertNode(root,i);
+  }
+  
+  /* Displaying the in-order traversal of the tree */
+  displayTree(root);
+  
+  /* Testing the height of the tree */
+  int treeHeight = height(root);
+  cout<<"Height of tree : "<<treeHeight<<endl;
+
+  /* Testing whether the tree is balanced */
+  bool isBalancedTree = isBalanced(root);
+  cout<<"Is balanced status : ";
+  cout<<isBalancedTree<<endl;
+
+  /* Testing whether the tree has binary search property.Expected Yes */
+  bool isBSTCurrent = isBST(root); 
+  cout<<"Maintains binary search property status : ";
+  cout<<isBSTCurrent<<endl;
+  
+  /* Removing certain nodes */
+  removeNode(root,3);
+  removeNode(root,8);
+  removeNode(root,4);
+  
+  /* Displaying the in-order traversal of the tree */
+  displayTree(root);
+  
+  
+  
+  return 0;
+}
+
+/*
+ * Function : isBST
+ * ---------------------------------------------------------
+ * Returns if the Binary Search property holds for the tree.
+ */
+
+  bool isBST(BSTNode* tree){
+    if(tree==NULL)
+      return true;
+    else{
+      int key = tree->key;
+      int leftkey;
+      int rightkey;
+      if(tree->left==NULL && tree->right==NULL)
+        return true;
+      else if(tree->left==NULL && tree->right!=NULL){
+        rightkey = tree->right->key;
+        return key<rightkey && isBST(tree->right);
+      }
+      else if(tree->left!=NULL && tree->right==NULL){
+        leftkey = tree->left->key;
+        return key>leftkey && isBST(tree->left);
+      }else{
+        rightkey = tree->right->key;
+        leftkey = tree->left->key;
+        return key<rightkey && key>leftkey && isBST(tree->left) && isBST(tree->right);            
+      }
+    }
+  }  
+/* 
+ * Function : isBalanced
+ * --------------------------------------------
+ * Returns whether the tree is balanced or not
+ */
+
+  bool isBalanced(BSTNode *tree){
+    if(tree==NULL)
+      return true;
+    else{
+      if(isBalanced(tree->left) && isBalanced(tree->right)){
+        int leftheight = height(tree->left);
+        int rightheight =height(tree->right);
+        int diff = abs(leftheight-rightheight);
+        if(diff<=1)
+          return true;
+        else
+          return false; 
+      }else 
+        return false;
+    } 
+  }
+
+/*
+ * Function : height
+ * --------------------------------
+ * Determines the height of a tree
+ */
+
+  int height(BSTNode *tree){
+    if(tree==NULL)
+      return 0;
+    else{
+      if(tree->left==NULL && tree->right==NULL)
+        return 1;
+      else if(tree->left==NULL && tree->right!=NULL)
+        return 1 + height(tree->right);
+      else if(tree->left!=NULL && tree->right==NULL)
+        return 1 + height(tree->left);
+      else{
+        int leftheight = height(tree->left);
+        int rightheight = height(tree->right); 
+        return 1 + leftheight>rightheight?leftheight:rightheight;
+      }
+    }
+  }
+
+/* 
+ * Function : displayTree
+ * ------------------------------
+ * Displays by inorder traversal.
+ */
+
+  void displayTree(BSTNode* tree){
+    if(tree==NULL)
+      return;
+    else{
+      displayTree(tree->left);
+      cout<<tree->key<<endl;
+      displayTree(tree->right);
+    }
+  }
+
+/*
+ * Function : removeNode
+ * ------------------------------------------------------------------
+ * Removes the node with the specified key from the specified tree.
+ * Returns a boolean value indicating if the node with the specified
+ * key was removed.
+ */ 
+
+  bool removeNode(BSTNode* &tree,const int &key){
+    BSTNode *toDelete = findNode(tree,key);
+    if(toDelete==NULL)
+      return false;
+    if(toDelete->left==NULL){
+      BSTNode* newRoot = toDelete->right;
+      toDelete->key = newRoot->key;
+      toDelete->left= newRoot->left;
+      toDelete->right = newRoot->right;
+      delete newRoot; 
+    }
+    else if(toDelete->right==NULL){
+      BSTNode* newRoot = toDelete->left;
+      toDelete->key = newRoot->key;
+      toDelete->left= newRoot->left;
+      toDelete->right = newRoot->right;
+      delete newRoot; 
+    }
+    else{
+      BSTNode* newRoot = toDelete->left;
+      BSTNode* parent = toDelete;
+      while(newRoot->right!=NULL){
+        parent=newRoot;
+        newRoot = newRoot->right;
+      }
+      if(parent!=toDelete){
+        parent->right = newRoot->left;
+        newRoot->left = toDelete->left;  
+      }
+      newRoot->right = toDelete->right; 
+      toDelete->key = newRoot->key;
+      toDelete->left= newRoot->left;
+      toDelete->right = newRoot->right;
+      delete newRoot; 
+    }
+    return true;
+  }
+
+  /* 
+   * Helper Functions : traverseAndStoreKeys
+   * ----------------------------------------------------------------------------------
+   * Traverses the tree and stores the keys of all members except the one to be deleted
+   */
+
+   void traverseAndStoreKeys(BSTNode* tree,vector<int> &keys,const int &key){
+     if(tree==NULL)
+       return;
+     else{
+       traverseAndStoreKeys(tree->left,keys,key);
+       if(key!=tree->key)
+         keys.push_back(tree->key);
+       traverseAndStoreKeys(tree->right,keys,key);
+     }  
+   }
+/*
+ * Function : insertNode
+ * ------------------------------------------------------------------------
+ * Inserts a node into a binary tree, preserving the binary search property.
+ * Assumes that keys are unique.
+ */
+
+  void insertNode(BSTNode* &tree, const int &key){
+    if(tree==NULL){
+      BSTNode* node = new BSTNode;
+      node->key = key;
+      node->left = node->right = NULL;
+      tree = node; 
+    }
+    if(tree->key!=key){
+      if(key<tree->key)
+        insertNode(tree->left,key);
+      else
+        insertNode(tree->right,key);
+    }
+  }
+
+/* 
+ * Function : findNode
+ * ------------------------------------------------------------------------
+ * Finds the node with the specified key and returns a pointer to the same.
+ */
+ 
+  BSTNode *findNode(BSTNode* &tree, const int &key){
+    if(tree==NULL)
+      return NULL;
+    if(tree->key==key)
+      return tree;
+    else
+      if(key<tree->key)
+        return findNode(tree->left,key);
+      else
+        return findNode(tree->right,key);
+  }
+
+
+
