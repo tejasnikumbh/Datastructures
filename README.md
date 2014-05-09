@@ -7,7 +7,7 @@ Data Structures Implementations in C++.
   - Binary Search Tree (Without Balancing)
   - Family Tree (Not a BST)
 * HashMap
-  - Simple HashMap
+  - Templatized HashMap Implementation
 * Queue
   - Templatized Queue Implementation
 * Stack
