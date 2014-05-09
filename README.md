@@ -1,12 +1,17 @@
 Datastructures
-==============
+================================================================================================================
 
-Data Structures. Some of these accept template based data types (generic) and some others only the integer data type..
-Following is a list of the same.
-* Binary Search Tree
+Data Structures Implementations in C++.
+* Binary Search Trees
   - AVL Tree, AVL Tree with Lazy Deletion
+  - Binary Search Tree (Without Balancing)
+  - Family Tree (Not a BST)
 * HashMap
+  - Simple HashMap
 * Queue
+  - Templatized Queue Implementation
 * Stack
+  - Templatized Stack Implementation
 * Vector
+  - Templatized Vector Implementation 
 
